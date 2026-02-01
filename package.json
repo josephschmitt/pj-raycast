@@ -21,6 +21,46 @@
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "name": "pjPath",
+      "title": "PJ Binary Path",
+      "description": "Path to the pj binary. Leave empty to use 'pj' from PATH.",
+      "type": "textfield",
+      "required": false,
+      "default": "pj"
+    },
+    {
+      "name": "defaultAction",
+      "title": "Default Action",
+      "description": "The primary action when pressing Enter on a project",
+      "type": "dropdown",
+      "required": false,
+      "default": "editor",
+      "data": [
+        { "title": "Open in Editor", "value": "editor" },
+        { "title": "Open in Finder", "value": "finder" },
+        { "title": "Open in Terminal", "value": "terminal" },
+        { "title": "Copy Path", "value": "copy" }
+      ]
+    },
+    {
+      "name": "editorApp",
+      "title": "Editor Application",
+      "description": "The editor application to open projects in (e.g., Visual Studio Code, Cursor, Zed)",
+      "type": "textfield",
+      "required": false,
+      "default": "Visual Studio Code"
+    },
+    {
+      "name": "terminalApp",
+      "title": "Terminal Application",
+      "description": "The terminal application to open projects in (e.g., Terminal, iTerm, Warp)",
+      "type": "textfield",
+      "required": false,
+      "default": "Terminal"
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.104.3",
     "@raycast/utils": "^1.17.0"
