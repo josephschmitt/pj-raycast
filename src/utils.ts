@@ -28,8 +28,12 @@ export function getProjectIcon(project: Project): string | Icon {
 // Format path for display (replace home dir with ~)
 export function formatDisplayPath(path: string): string {
   const home = homedir();
-  if (path.startsWith(home)) {
-    return path.replace(home, "~");
+  // Ensure we only replace if the path starts with home dir followed by / or is exactly home
+  if (path === home) {
+    return "~";
+  }
+  if (path.startsWith(home + "/")) {
+    return "~" + path.slice(home.length);
   }
   return path;
 }
