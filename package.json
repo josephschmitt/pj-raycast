@@ -25,14 +25,24 @@
       "title": "Quick Switch",
       "description": "Quickly switch to a project with instant search",
       "mode": "view",
-      "keywords": ["switch", "jump", "open", "recent"]
+      "keywords": [
+        "switch",
+        "jump",
+        "open",
+        "recent"
+      ]
     },
     {
       "name": "search-projects",
       "title": "Search Projects",
       "description": "Advanced search with filtering by type and last modified",
       "mode": "view",
-      "keywords": ["search", "filter", "type", "advanced"]
+      "keywords": [
+        "search",
+        "filter",
+        "type",
+        "advanced"
+      ]
     }
   ],
   "preferences": [
@@ -97,6 +107,7 @@
     "@types/node": "22.13.10",
     "@types/react": "19.0.10",
     "eslint": "^9.22.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2"
   },
@@ -106,6 +117,7 @@
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
     "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
-    "publish": "npx @raycast/api@latest publish"
+    "publish": "npx @raycast/api@latest publish",
+    "prepare": "husky"
   }
 }
