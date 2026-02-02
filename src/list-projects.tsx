@@ -13,13 +13,7 @@ import {
 import { useExec } from "@raycast/utils";
 import { homedir } from "os";
 import { useState, useEffect } from "react";
-
-interface Project {
-  path: string;
-  name: string;
-  icon: string;
-  marker: string;
-}
+import type { Project } from "@joe-sh/pj";
 
 interface PJOutput {
   projects: Project[];
@@ -64,6 +58,27 @@ function formatDisplayPath(path: string): string {
   return path;
 }
 
+// Format marker as a readable project type
+function formatProjectType(marker: string): string {
+  const markerTypes: Record<string, string> = {
+    ".git": "git",
+    "package.json": "npm",
+    "Cargo.toml": "cargo",
+    "go.mod": "go",
+    "pyproject.toml": "python",
+    Makefile: "make",
+    "flake.nix": "nix",
+    "composer.json": "php",
+    "build.gradle": "gradle",
+    "pom.xml": "maven",
+    Gemfile: "ruby",
+    "mix.exs": "elixir",
+    "deno.json": "deno",
+    "pubspec.yaml": "dart",
+  };
+  return markerTypes[marker] || marker;
+}
+
 export default function Command() {
   const preferences = getPreferenceValues<Preferences>();
   const pjCommand = preferences.pjPath || "pj";
@@ -81,7 +96,7 @@ export default function Command() {
       const terminal = apps.find(
         (app) =>
           app.name.toLowerCase() === terminalName.toLowerCase() ||
-          app.name.toLowerCase().includes(terminalName.toLowerCase())
+          app.name.toLowerCase().includes(terminalName.toLowerCase()),
       );
       setTerminalApp(terminal);
 
@@ -90,7 +105,7 @@ export default function Command() {
       const editor = apps.find(
         (app) =>
           app.name.toLowerCase() === editorName.toLowerCase() ||
-          app.name.toLowerCase().includes(editorName.toLowerCase())
+          app.name.toLowerCase().includes(editorName.toLowerCase()),
       );
       setEditorApp(editor);
     }
@@ -138,7 +153,7 @@ export default function Command() {
             icon={getProjectIcon(project)}
             title={project.name}
             subtitle={formatDisplayPath(project.path)}
-            accessories={[{ icon: Icon.Folder, tooltip: project.path }]}
+            accessories={[{ tag: formatProjectType(project.marker) }, { icon: Icon.Folder, tooltip: project.path }]}
             actions={
               <ProjectActions
                 project={project}

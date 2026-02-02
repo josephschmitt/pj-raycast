@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "pj",
+  "name": "pj-projects",
   "title": "PJ",
   "description": "Display a project picker of all the projects on your system and lets you open one",
   "icon": "extension-icon.png",
@@ -38,10 +38,22 @@
       "required": false,
       "default": "editor",
       "data": [
-        { "title": "Open in Editor", "value": "editor" },
-        { "title": "Open in Finder", "value": "finder" },
-        { "title": "Open in Terminal", "value": "terminal" },
-        { "title": "Copy Path", "value": "copy" }
+        {
+          "title": "Open in Editor",
+          "value": "editor"
+        },
+        {
+          "title": "Open in Finder",
+          "value": "finder"
+        },
+        {
+          "title": "Open in Terminal",
+          "value": "terminal"
+        },
+        {
+          "title": "Copy Path",
+          "value": "copy"
+        }
       ]
     },
     {
@@ -62,6 +74,7 @@
     }
   ],
   "dependencies": {
+    "@joe-sh/pj": "^1.5.3",
     "@raycast/api": "^1.104.3",
     "@raycast/utils": "^1.17.0"
   },
