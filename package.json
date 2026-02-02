@@ -19,6 +19,20 @@
       "title": "List Projects",
       "description": "Lists your projects using pj",
       "mode": "view"
+    },
+    {
+      "name": "quick-switch",
+      "title": "Quick Switch",
+      "description": "Quickly switch to a project with instant search",
+      "mode": "view",
+      "keywords": ["switch", "jump", "open", "recent"]
+    },
+    {
+      "name": "search-projects",
+      "title": "Search Projects",
+      "description": "Advanced search with filtering by type and last modified",
+      "mode": "view",
+      "keywords": ["search", "filter", "type", "advanced"]
     }
   ],
   "preferences": [

@@ -11,7 +11,7 @@ import {
   getApplications,
 } from "@raycast/api";
 import { discover, getBinaryManager } from "@joe-sh/pj";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Project, Preferences } from "./types";
 import {
   getProjectIcon,
@@ -21,17 +21,24 @@ import {
   toggleFavorite,
   addToRecentProjects,
 } from "./utils";
+import { statSync } from "fs";
 
-export default function Command() {
+interface ProjectWithStats extends Project {
+  lastModified?: Date;
+  size?: number;
+}
+
+export default function SearchProjects() {
   const preferences = getPreferenceValues<Preferences>();
 
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectWithStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string>("all");
   const [terminalApp, setTerminalApp] = useState<Application | undefined>();
   const [editorApp, setEditorApp] = useState<Application | undefined>();
 
-  // Load projects using @joe-sh/pj API
+  // Load projects with stats
   async function loadProjects() {
     try {
       setIsLoading(true);
@@ -46,18 +53,27 @@ export default function Command() {
       const storedFavorites = await getFavorites();
       setFavorites(storedFavorites);
 
-      // Sort projects: favorites first, then alphabetically
-      const sortedProjects = [...discoveredProjects].sort((a, b) => {
-        const aIsFavorite = storedFavorites.includes(a.path);
-        const bIsFavorite = storedFavorites.includes(b.path);
-
-        if (aIsFavorite && !bIsFavorite) return -1;
-        if (!aIsFavorite && bIsFavorite) return 1;
-
-        return a.name.localeCompare(b.name);
+      // Add stats to projects
+      const projectsWithStats: ProjectWithStats[] = discoveredProjects.map((project) => {
+        try {
+          const stats = statSync(project.path);
+          return {
+            ...project,
+            lastModified: stats.mtime,
+            size: stats.size,
+          };
+        } catch {
+          return project;
+        }
       });
 
-      setProjects(sortedProjects);
+      // Sort by last modified date
+      projectsWithStats.sort((a, b) => {
+        if (!a.lastModified || !b.lastModified) return 0;
+        return b.lastModified.getTime() - a.lastModified.getTime();
+      });
+
+      setProjects(projectsWithStats);
     } catch (error) {
       console.error("Failed to load projects:", error);
       await showToast({
@@ -70,6 +86,22 @@ export default function Command() {
       setIsLoading(false);
     }
   }
+
+  // Get unique project types
+  const projectTypes = useMemo(() => {
+    const types = new Set<string>();
+    projects.forEach((p) => types.add(formatProjectType(p.marker)));
+    return Array.from(types).sort();
+  }, [projects]);
+
+  // Filter projects by selected type
+  const filteredProjects = useMemo(() => {
+    if (selectedType === "all") return projects;
+    if (selectedType === "favorites") {
+      return projects.filter((p) => favorites.includes(p.path));
+    }
+    return projects.filter((p) => formatProjectType(p.marker) === selectedType);
+  }, [projects, selectedType, favorites]);
 
   // Find the configured terminal and editor applications
   useEffect(() => {
@@ -102,27 +134,72 @@ export default function Command() {
     loadProjects();
   }, []);
 
+  // Format date for display
+  function formatDate(date: Date | undefined): string {
+    if (!date) return "";
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
+  }
+
   return (
-    <List isLoading={isLoading} searchBarPlaceholder="Search projects...">
-      {projects.length === 0 && !isLoading ? (
+    <List
+      isLoading={isLoading}
+      searchBarPlaceholder="Search projects by name or path..."
+      searchBarAccessory={
+        <List.Dropdown tooltip="Filter by project type" value={selectedType} onChange={setSelectedType}>
+          <List.Dropdown.Item title="All Projects" value="all" />
+          {favorites.length > 0 && (
+            <List.Dropdown.Item
+              title={`Favorites (${projects.filter((p) => favorites.includes(p.path)).length})`}
+              value="favorites"
+              icon={Icon.Star}
+            />
+          )}
+          <List.Dropdown.Section title="Project Types">
+            {projectTypes.map((type) => (
+              <List.Dropdown.Item
+                key={type}
+                title={`${type} (${projects.filter((p) => formatProjectType(p.marker) === type).length})`}
+                value={type}
+              />
+            ))}
+          </List.Dropdown.Section>
+        </List.Dropdown>
+      }
+    >
+      {filteredProjects.length === 0 && !isLoading ? (
         <List.EmptyView
           icon={Icon.Folder}
-          title="No Projects Found"
-          description="Make sure pj is installed and configured correctly."
+          title={selectedType === "all" ? "No Projects Found" : `No ${selectedType} Projects Found`}
+          description={
+            selectedType === "all"
+              ? "Make sure pj is installed and configured correctly."
+              : "Try selecting a different filter."
+          }
         />
       ) : (
-        projects.map((project, index) => {
+        filteredProjects.map((project) => {
           const isFavorite = favorites.includes(project.path);
+
           return (
             <List.Item
-              key={`${project.path}-${index}`}
+              key={project.path}
               icon={getProjectIcon(project)}
               title={project.name}
               subtitle={formatDisplayPath(project.path)}
               accessories={[
                 isFavorite ? { icon: Icon.Star, tooltip: "Favorite" } : null,
+                project.lastModified ? { text: formatDate(project.lastModified), tooltip: "Last modified" } : null,
                 { tag: formatProjectType(project.marker) },
-                { icon: Icon.Folder, tooltip: project.path },
               ].filter(Boolean)}
               actions={
                 <ProjectActions
