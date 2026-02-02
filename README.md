@@ -4,7 +4,7 @@ A Raycast extension for [pj](https://github.com/josephschmitt/pj) - a fast proje
 
 ## Prerequisites
 
-You need to have `pj` installed on your system. Install it via Homebrew:
+The pj binary will be automatically downloaded when you first use the extension. Alternatively, you can install it manually via Homebrew:
 
 ```bash
 brew install josephschmitt/tap/pj
@@ -12,18 +12,48 @@ brew install josephschmitt/tap/pj
 
 Or download the binary directly from [GitHub releases](https://github.com/josephschmitt/pj/releases).
 
+## Commands
+
+### List Projects
+
+The main command that displays all your projects with full functionality:
+
+- Shows all projects discovered by pj
+- Favorites appear at the top (star/unstar with Cmd+Shift+F)
+- Project type tags (git, npm, cargo, go, etc.)
+- Multiple actions for each project
+
+### Quick Switch
+
+Optimized for speed - quickly jump to any project:
+
+- Shows recently opened projects first (last 10)
+- Instant search across all projects
+- Single action: open directly in your editor
+
+### Search Projects
+
+Advanced search with filtering capabilities:
+
+- Filter by project type (git, npm, cargo, go, etc.)
+- Filter to show only favorites
+- Shows last modified date for each project
+- Full action panel like List Projects
+
 ## Features
 
-- Lists all projects discovered by pj
-- Shows project type (git, npm, cargo, go, etc.) as a tag
-- Multiple actions for each project:
+- **Favorites**: Star frequently used projects to pin them to the top
+- **Recent Projects**: Quick Switch shows your most recently accessed projects first
+- **Project Type Tags**: Instantly see what type each project is (git, npm, cargo, go, python, etc.)
+- **Multiple Actions**:
   - **Open in Editor** (Cmd+E) - Opens in your configured editor
   - **Open in Finder** (Cmd+F) - Reveals in Finder
   - **Open in Terminal** (Cmd+T) - Opens in your configured terminal
   - **Copy Path** (Cmd+C) - Copies the project path to clipboard
   - **Open With** (Cmd+Shift+O) - Choose any application
-- Configurable default action
-- Configurable editor and terminal applications
+  - **Add/Remove Favorites** (Cmd+Shift+F) - Toggle favorite status
+- **Configurable Default Action**: Set which action triggers on Enter
+- **Configurable Applications**: Choose your preferred editor and terminal
 
 ## Configuration
 
@@ -71,4 +101,31 @@ See the [pj documentation](https://github.com/josephschmitt/pj) for more configu
 | Cmd+T | Open in Terminal |
 | Cmd+C | Copy Path |
 | Cmd+Shift+O | Open With... |
+| Cmd+Shift+F | Toggle Favorite |
 | Cmd+R | Refresh project list |
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Lint code
+npm run lint
+
+# Build for production
+npm run build
+```
+
+## License
+
+MIT
