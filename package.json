@@ -98,7 +98,7 @@
     }
   ],
   "dependencies": {
-    "@joe-sh/pj": "^1.6.1",
+    "@joe-sh/pj": "^1.6.3",
     "@raycast/api": "^1.104.3",
     "@raycast/utils": "^1.17.0"
   },
